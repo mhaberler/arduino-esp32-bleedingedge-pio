@@ -1,8 +1,8 @@
-/* 
+/*
   Ticker.h - esp32 library that calls functions periodically
 
   Copyright (c) 2017 Bert Melis. All rights reserved.
-  
+
   Based on the original work of:
   Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
   The original version is part of the esp8266 core for Arduino environment.
@@ -25,47 +25,41 @@
 #ifndef RTOSTICKER_H
 #define RTOSTICKER_H
 
-#include <functional>
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
+#include <functional>
 
-
-
-class RTOSTicker
-{
+class RTOSTicker {
 public:
   typedef std::function<void(void)> _callbackFunction_t;
 
   RTOSTicker();
   ~RTOSTicker();
 
-  void attach(float seconds, _callbackFunction_t callback);
-  void attach_ms(uint32_t milliseconds, _callbackFunction_t callback);
-  void once(float seconds, _callbackFunction_t callback);
-  void once_ms(uint32_t milliseconds, _callbackFunction_t callback);
+  void attach(float seconds, _callbackFunction_t callback, uint8_t core = 0,
+              uint32_t stacksize = 0);
+  void attach_ms(uint32_t milliseconds, _callbackFunction_t callback,
+                 uint8_t core = 0, uint32_t stacksize = 0);
+  void once(float seconds, _callbackFunction_t callback, uint8_t core = 0,
+            uint32_t stacksize = 0);
+  void once_ms(uint32_t milliseconds, _callbackFunction_t callback,
+               uint8_t core = 0, uint32_t stacksize = 0);
 
   void detach();
   bool active();
   bool periodic();
 
-protected:	
-
-  enum TimerState
-  {
-	  INITIAL,
-	  REPEAT,
-	  ONCE
-  };
+protected:
+  enum TimerState { INITIAL, REPEAT, ONCE };
 
   TimerHandle_t _timerHandle = nullptr;
   _callbackFunction_t _callbackFunction = nullptr;
-  TimerState timerState =  INITIAL;
+  TimerState timerState = INITIAL;
 
-  void _attach_ms(uint32_t milliseconds, bool repeat, _callbackFunction_t callback);
+  void _attach_ms(uint32_t milliseconds, bool repeat,
+                  _callbackFunction_t callback, uint8_t core, uint32_t stacksize);
 
   static void internalCallback(TimerHandle_t callbackTimer);
-
 };
 
-
-#endif  // RTOSTICKER_H
+#endif // RTOSTICKER_H

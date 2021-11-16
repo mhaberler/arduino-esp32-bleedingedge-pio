@@ -37,24 +37,24 @@ RTOSTicker::~RTOSTicker()
 	}
 }
 
-void RTOSTicker::attach(float seconds, _callbackFunction_t callback)
+void RTOSTicker::attach(float seconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
 {
-	_attach_ms(seconds*1000, true, callback);
+	_attach_ms(seconds*1000, true, callback, core, stacksize);
 }
-void RTOSTicker::attach_ms(uint32_t milliseconds, _callbackFunction_t callback)
+void RTOSTicker::attach_ms(uint32_t milliseconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
 {
-	_attach_ms(milliseconds, true, callback);
+	_attach_ms(milliseconds, true, callback, core, stacksize);
 }
-void RTOSTicker::once(float seconds, _callbackFunction_t callback)
+void RTOSTicker::once(float seconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
 {
-	_attach_ms(seconds*1000, false, callback);
+	_attach_ms(seconds*1000, false, callback, core, stacksize);
 }
-void RTOSTicker::once_ms(uint32_t milliseconds, _callbackFunction_t callback)
+void RTOSTicker::once_ms(uint32_t milliseconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
 {
-	_attach_ms(milliseconds, false, callback);
+	_attach_ms(milliseconds, false, callback, core, stacksize);
 }
 
-void RTOSTicker::_attach_ms(uint32_t milliseconds, bool repeat, _callbackFunction_t callback)
+void RTOSTicker::_attach_ms(uint32_t milliseconds, bool repeat, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
 {
 	_callbackFunction = callback;
 	if (_timerHandle)
