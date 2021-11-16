@@ -62,6 +62,7 @@ protected:
                   _callbackFunction_t callback, uint8_t core, uint32_t stacksize);
 
   static void internalCallback(TimerHandle_t callbackTimer);
+  static void threadHandler(void *arg);
 };
 
 #endif // RTOSTICKER_H

@@ -90,6 +90,15 @@ void RTOSTicker::internalCallback(TimerHandle_t callbackTimer) {
     if (callbackID) {
       RTOSTicker *self = (RTOSTicker *)pvTimerGetTimerID(callbackTimer);
       if (self->_stacksize > 0) {
+
+        TaskHandle_t th;
+        int priority = 0;
+        int rc = xTaskCreateUniversal(
+            RTOSTicker::threadHandler, "foo", self->_stacksize,
+
+            (void *)((RTOSTicker *)callbackID)->_callbackFunction, priority,
+            &th, self->_core);
+
       } else {
 
         ((RTOSTicker *)callbackID)->_callbackFunction();
@@ -97,3 +106,5 @@ void RTOSTicker::internalCallback(TimerHandle_t callbackTimer) {
     }
   }
 }
+
+void RTOSTicker::threadHandler(void *arg) {}
