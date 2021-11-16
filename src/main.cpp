@@ -1,44 +1,31 @@
-// ESP32 I2C Scanner
-// Based on code of Nick Gammon  http://www.gammon.com.au/forum/?id=10896
-// ESP32 DevKit - Arduino IDE 1.8.5
-// Device tested PCF8574 - Use pullup resistors 3K3 ohms !
-// PCF8574 Default Freq 100 KHz
-
 #include <Arduino.h>
-#include <Wire.h>
-int x = 0;
+#include <Ticker.h>
+
+RTOSTicker t1, t2, t3;
+
+int counter;
+
+void first(void) { Serial.println("first called "); }
+
+void second_with_arg(int answer) {
+  Serial.printf("second. The answer is: %d\n", answer);
+}
+
+void third_with_arg(int answer) {
+  Serial.printf("third. The answer is: %d\n", answer);
+}
 
 void setup() {
   Serial.begin(115200);
-  Wire.begin(21, 22); // sda= GPIO_21 /scl= GPIO_22
-}
+  int foo = 42;
 
-void Scanner() {
-  Serial.println();
-  Serial.println("I2C scanner. Scanning ...");
-  byte count = 0;
-
-  Wire.begin();
-  for (byte i = 8; i < 120; i++) {
-    Wire.beginTransmission(i);       // Begin I2C transmission Address (i)
-    if (Wire.endTransmission() == 0) // Receive 0 = success (ACK response)
-    {
-      Serial.print("Found address: ");
-      Serial.print(i, DEC);
-      Serial.print(" (0x");
-      Serial.print(i, HEX); // PCF8574 7 bit address
-      Serial.println(")");
-      count++;
-    }
-  }
-
-  Serial.print("Found ");
-  Serial.print(count, DEC); // numbers of devices
-  Serial.println(" device(s).");
+  t1.once_ms(1000, first);
+  t2.once_ms(2000, [foo](void) { return second_with_arg(foo); });
+  t3.once_ms(
+      3000, [foo](void) { Serial.printf("via lambda, captured arg=%d", foo); });
+  foo = 4712;
 }
 
 void loop() {
-  Scanner();
-  float foo = 1 / x;
-  delay(1000);
+
 }
