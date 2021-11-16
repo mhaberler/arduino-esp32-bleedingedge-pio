@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Ticker.h>
 
-RTOSTicker t1, t2, t3;
+RTOSTicker t1, t2, t3, t4;
 
 int counter;
 
@@ -15,6 +15,8 @@ void third_with_arg(int answer) {
   Serial.printf("third. The answer is: %d\n", answer);
 }
 
+void periodic_with_arg(int c) {}
+
 void setup() {
   Serial.begin(115200);
   int foo = 42;
@@ -24,8 +26,17 @@ void setup() {
   t3.once_ms(
       3000, [foo](void) { Serial.printf("via lambda, captured arg=%d", foo); });
   foo = 4712;
+  t4.attach_ms(1000, [&t4, foo](void) {
+    static int countdown = 5;
+    Serial.printf("via lambda with Timer captured, captured arg=%d active=%d "
+                  "periodic=%d\n",
+                  foo, t4.active(), t4.periodic());
+    if (t4.periodic() && countdown == 0) {
+      Serial.println("detaching..");
+      t4.detach();
+    }
+    countdown--;
+  });
 }
 
-void loop() {
-
-}
+void loop() {}
