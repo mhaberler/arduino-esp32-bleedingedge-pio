@@ -23,6 +23,7 @@
 */
 
 #include "Ticker.h"
+#include "esp32-hal.h"
 
 RTOSTicker::RTOSTicker() {}
 
