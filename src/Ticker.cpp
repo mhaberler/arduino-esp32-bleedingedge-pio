@@ -1,8 +1,8 @@
-/* 
+/*
   Ticker.cpp - esp32 library that calls functions periodically
 
   Copyright (c) 2017 Bert Melis. All rights reserved.
-  
+
   Based on the original work of:
   Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
   The original version is part of the esp8266 core for Arduino environment.
@@ -24,87 +24,76 @@
 
 #include "Ticker.h"
 
-RTOSTicker::RTOSTicker()
-{
-}
+RTOSTicker::RTOSTicker() {}
 
-
-RTOSTicker::~RTOSTicker()
-{
-	if (_timerHandle)
-	{
-		xTimerDelete(_timerHandle, portMAX_DELAY);
-	}
-}
-
-void RTOSTicker::attach(float seconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
-{
-	_attach_ms(seconds*1000, true, callback, core, stacksize);
-}
-void RTOSTicker::attach_ms(uint32_t milliseconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
-{
-	_attach_ms(milliseconds, true, callback, core, stacksize);
-}
-void RTOSTicker::once(float seconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
-{
-	_attach_ms(seconds*1000, false, callback, core, stacksize);
-}
-void RTOSTicker::once_ms(uint32_t milliseconds, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
-{
-	_attach_ms(milliseconds, false, callback, core, stacksize);
-}
-
-void RTOSTicker::_attach_ms(uint32_t milliseconds, bool repeat, _callbackFunction_t callback, uint8_t core, uint32_t stacksize)
-{
-	_callbackFunction = callback;
-	if (_timerHandle)
-	{
-		if (((timerState == REPEAT) && !repeat) || ((timerState == ONCE) && repeat))
-		{
-			xTimerDelete(_timerHandle, portMAX_DELAY);
-			_timerHandle = nullptr;
-			timerState = INITIAL;
-		}
-	}
-	if (!_timerHandle)
-	{
-		_timerHandle = xTimerCreate
-	            ( "RTOSTicker",
-	              1, // will be updated on changeperiod
-	              repeat, // once
-	              this, // timerID is this to refer to object
-	              internalCallback );
-		timerState = repeat ? REPEAT : ONCE;
-	}
-	// changeperiod will also start timer
-	xTimerChangePeriod( _timerHandle,
-	                    milliseconds /  portTICK_PERIOD_MS,
-						portMAX_DELAY );
-}
-
-void RTOSTicker::detach() {
-  if (_timerHandle)
-  {
-	  xTimerStop(_timerHandle, portMAX_DELAY);
+RTOSTicker::~RTOSTicker() {
+  if (_timerHandle) {
+    xTimerDelete(_timerHandle, portMAX_DELAY);
   }
 }
 
-bool RTOSTicker::active() {
-    return timerState != INITIAL;
+void RTOSTicker::attach(float seconds, _callbackFunction_t callback,
+                        uint8_t core, uint32_t stacksize) {
+  _attach_ms(seconds * 1000, true, callback, core, stacksize);
+}
+void RTOSTicker::attach_ms(uint32_t milliseconds, _callbackFunction_t callback,
+                           uint8_t core, uint32_t stacksize) {
+  _attach_ms(milliseconds, true, callback, core, stacksize);
+}
+void RTOSTicker::once(float seconds, _callbackFunction_t callback, uint8_t core,
+                      uint32_t stacksize) {
+  _attach_ms(seconds * 1000, false, callback, core, stacksize);
+}
+void RTOSTicker::once_ms(uint32_t milliseconds, _callbackFunction_t callback,
+                         uint8_t core, uint32_t stacksize) {
+  _attach_ms(milliseconds, false, callback, core, stacksize);
 }
 
-bool RTOSTicker::periodic() {
-    return timerState == REPEAT;
+void RTOSTicker::_attach_ms(uint32_t milliseconds, bool repeat,
+                            _callbackFunction_t callback, uint8_t core,
+                            uint32_t stacksize) {
+  _callbackFunction = callback;
+  if (_timerHandle) {
+    if (((timerState == REPEAT) && !repeat) ||
+        ((timerState == ONCE) && repeat)) {
+      xTimerDelete(_timerHandle, portMAX_DELAY);
+      _timerHandle = nullptr;
+      timerState = INITIAL;
+    }
+  }
+  if (!_timerHandle) {
+    _timerHandle = xTimerCreate("RTOSTicker",
+                                1,      // will be updated on changeperiod
+                                repeat, // once
+                                this,   // timerID is this to refer to object
+                                internalCallback);
+    timerState = repeat ? REPEAT : ONCE;
+  }
+  // changeperiod will also start timer
+  xTimerChangePeriod(_timerHandle, milliseconds / portTICK_PERIOD_MS,
+                     portMAX_DELAY);
 }
 
-void RTOSTicker::internalCallback(TimerHandle_t callbackTimer)
-{
-	if (callbackTimer)
-	{
-		auto callbackID = pvTimerGetTimerID(callbackTimer);
-		if (callbackID)
-		{
-			((RTOSTicker*)callbackID)->_callbackFunction();
-		}
-	}
+void RTOSTicker::detach() {
+  if (_timerHandle) {
+    xTimerStop(_timerHandle, portMAX_DELAY);
+  }
+}
+
+bool RTOSTicker::active() { return timerState != INITIAL; }
+
+bool RTOSTicker::periodic() { return timerState == REPEAT; }
+
+void RTOSTicker::internalCallback(TimerHandle_t callbackTimer) {
+  if (callbackTimer) {
+    auto callbackID = pvTimerGetTimerID(callbackTimer);
+    if (callbackID) {
+      RTOSTicker *self = (RTOSTicker *)pvTimerGetTimerID(callbackTimer);
+      if (self->_stacksize > 0) {
+      } else {
+
+        ((RTOSTicker *)callbackID)->_callbackFunction();
+      }
+    }
+  }
 }

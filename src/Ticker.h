@@ -55,6 +55,8 @@ protected:
   TimerHandle_t _timerHandle = nullptr;
   _callbackFunction_t _callbackFunction = nullptr;
   TimerState timerState = INITIAL;
+  uint8_t _core = 0;
+  uint32_t _stacksize = 0;
 
   void _attach_ms(uint32_t milliseconds, bool repeat,
                   _callbackFunction_t callback, uint8_t core, uint32_t stacksize);
