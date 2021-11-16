@@ -89,6 +89,10 @@ void RTOSTicker::detach() {
   }
 }
 
+bool RTOSTicker::active() {
+    return timerState != INITIAL;
+}
+
 void RTOSTicker::internalCallback(TimerHandle_t callbackTimer)
 {
 	if (callbackTimer)
