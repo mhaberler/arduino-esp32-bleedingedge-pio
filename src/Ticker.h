@@ -46,6 +46,7 @@ public:
 
   void detach();
   bool active();
+  bool periodic();
 
 protected:	
 

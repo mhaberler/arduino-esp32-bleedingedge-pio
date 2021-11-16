@@ -93,6 +93,10 @@ bool RTOSTicker::active() {
     return timerState != INITIAL;
 }
 
+bool RTOSTicker::periodic() {
+    return timerState == REPEAT;
+}
+
 void RTOSTicker::internalCallback(TimerHandle_t callbackTimer)
 {
 	if (callbackTimer)
